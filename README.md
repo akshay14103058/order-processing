@@ -39,24 +39,6 @@ A .NET 10.0 Backend Service for processing e-commerce orders, built with **Clean
    ```
    Access at `http://localhost:5000/swagger`.
 
-## Architecture
-The solution follows **Clean Architecture** (Onion Architecture):
-- **Domain**: Core entities (`Order`, `OrderItem`) and business rules. No external dependencies.
-- **Application**: Business logic (`OrderService`), Validators (`FluentValidation`), DTOs, and Interfaces.
-- **Infrastructure**: Implementation of Interfaces (`OrderRepository`, `AppDbContext`) and Background Services.
-- **Api**: REST Controllers, Serilog Logging, and Exception Middleware.
 
-## Design Patterns Used
-- **Repository Pattern**: To decouple business logic from data access (`IOrderRepository`).
-- **Dependency Injection**: To manage dependencies and lifecycle.
-- **Hosted Service**: For background processing (`OrderStatusUpdaterService`).
-- **DTO Pattern**: To separate API contracts from Domain entities.
-- **Middleware**: Global Exception Handling transparently manages errors.
 
-## AI Usage Report
-**Tool Used**: Cursor AI / Deepmind Agent
-**Purpose**:
-- **Scaffolding**: Generated Clean Architecture Solution structure.
-- **Refactoring**: Converted basic DataAnnotations to **FluentValidation** for cleanly separated rules.
-- **Quality Assurance**: Implemented **Serilog** for production-grade logging and Global Exception Handling.
-- **Migration**: Automatically migrated project from .NET 8.0 to .NET 10.0 based on environment detection.
+
