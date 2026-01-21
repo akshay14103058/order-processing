@@ -64,6 +64,7 @@ public class OrdersController : ControllerBase
     /// <returns>A list of orders.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] string? status)
     {
         OrderStatus? filter = null;
         if (!string.IsNullOrEmpty(status) && Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
