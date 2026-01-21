@@ -105,4 +105,46 @@ public class OrderServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<OrderProcessingSystem.Application.Exceptions.NotFoundException>(() => _orderService.GetOrderByIdAsync(orderId));
     }
+    [Fact]
+    public async Task GetAllOrdersAsync_ShouldReturnAllOrders_WhenNoFilterProvided()
+    {
+        // Arrange
+        var orders = new List<Order> { new Order(new List<OrderItem>()), new Order(new List<OrderItem>()) };
+        _mockRepo.Setup(r => r.GetAllAsync(null)).ReturnsAsync(orders);
+
+        // Act
+        var result = await _orderService.GetAllOrdersAsync(null);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count());
+    }
+
+    [Fact]
+    public async Task GetAllOrdersAsync_ShouldReturnFilteredOrders_WhenFilterProvided()
+    {
+        // Arrange
+        var status = OrderStatus.Processing;
+        var orders = new List<Order> { new Order(new List<OrderItem>()) }; 
+        _mockRepo.Setup(r => r.GetAllAsync(status)).ReturnsAsync(orders);
+
+        // Act
+        var result = await _orderService.GetAllOrdersAsync(status);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+        _mockRepo.Verify(r => r.GetAllAsync(status), Times.Once);
+    }
+
+    [Fact]
+    public async Task CancelOrderAsync_ShouldThrowNotFoundException_WhenOrderDoesNotExist()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        _mockRepo.Setup(r => r.GetByIdAsync(orderId)).ReturnsAsync((Order?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OrderProcessingSystem.Application.Exceptions.NotFoundException>(() => _orderService.CancelOrderAsync(orderId));
+    }
 }
