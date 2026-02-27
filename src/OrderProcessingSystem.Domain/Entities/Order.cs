@@ -12,6 +12,7 @@ public class Order
     public decimal TotalAmount { get; private set; }
     
     public decimal PaidAmount => Payments.Sum(p => p.Amount);
+    public decimal PendingAmount => TotalAmount - PaidAmount;
 
     public Order(List<OrderItem> items)
     {
@@ -43,6 +44,10 @@ public class Order
     {
         if (Status != OrderStatus.Pending)
             throw new InvalidOperationException("Cannot pay processed order");
+        if (amount <= 0)
+            throw new ArgumentException("Payment amount must be greater than zero.");
+        if (amount > PendingAmount)
+            throw new InvalidOperationException("Payment amount cannot exceed pending amount.");
 
         Payments.Add(new Payment(Id, amount));
     }

@@ -33,6 +33,7 @@ public class OrderRepository : IOrderRepository
     {
         var query = _context.Orders
             .Include(o => o.Items)
+            .Include(o => o.Payments)
             .AsQueryable();
 
         if (statusFilter.HasValue)
@@ -71,6 +72,7 @@ public class OrderRepository : IOrderRepository
     public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(OrderStatus status)
     {
         return await _context.Orders
+            .Include(o => o.Payments)
             .Where(o => o.Status == status)
             .ToListAsync();
     }

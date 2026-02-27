@@ -8,7 +8,9 @@ public class OrderDto
     public DateTime CreatedAt { get; set; }
     public string Status { get; set; } = string.Empty;
     public List<OrderItemDto> Items { get; set; } = new();
-    public decimal TotalAmount => Items.Sum(x => x.Quantity * x.UnitPrice);
+    public decimal TotalAmount { get; set; }
+    public decimal PaidAmount { get; set; }
+    public decimal PendingAmount { get; set; }
     
     public static OrderDto FromEntity(Order order)
     {
@@ -17,6 +19,9 @@ public class OrderDto
             Id = order.Id,
             CreatedAt = order.CreatedAt,
             Status = order.Status.ToString(),
+            TotalAmount = order.TotalAmount,
+            PaidAmount = order.PaidAmount,
+            PendingAmount = order.PendingAmount,
             Items = order.Items.Select(i => new OrderItemDto
             {
                 ProductName = i.ProductName,

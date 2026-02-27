@@ -149,4 +149,44 @@ public class OrderServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<OrderProcessingSystem.Application.Exceptions.NotFoundException>(() => _orderService.CancelOrderAsync(orderId));
     }
+
+    [Fact]
+    public async Task GetOrderByIdAsync_ShouldReturnPendingAmount()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        var order = new Order(new List<OrderItem>
+        {
+            new("Item", 2, 50m)
+        });
+        order.AddPayment(40m);
+
+        _mockRepo.Setup(r => r.GetByIdAsync(orderId)).ReturnsAsync(order);
+
+        // Act
+        var result = await _orderService.GetOrderByIdAsync(orderId);
+
+        // Assert
+        Assert.Equal(100m, result.TotalAmount);
+        Assert.Equal(40m, result.PaidAmount);
+        Assert.Equal(60m, result.PendingAmount);
+    }
+
+    [Fact]
+    public async Task AddPayment_ShouldThrowException_WhenAmountExceedsPending()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        var order = new Order(new List<OrderItem>
+        {
+            new("Item", 1, 100m)
+        });
+        order.AddPayment(40m);
+
+        _mockRepo.Setup(r => r.GetByIdAsync(orderId)).ReturnsAsync(order);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _orderService.AddPayment(orderId, 70m));
+        _mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Order>()), Times.Never);
+    }
 }
