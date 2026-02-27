@@ -95,4 +95,13 @@ public class OrdersController : ControllerBase
         await _orderService.CancelOrderAsync(id);
         return NoContent();
     }
+    
+    [HttpPost("payment")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Payment([FromBody] AddPaymentDTO request)
+    {
+        await _orderService.AddPayment(request.OrderId, request.Amount);
+        return Ok("Payment added successfully");
+    }
 }

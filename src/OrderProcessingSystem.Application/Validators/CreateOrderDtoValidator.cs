@@ -13,7 +13,7 @@ public class CreateOrderDtoValidator : AbstractValidator<CreateOrderDto>
         RuleForEach(x => x.Items).SetValidator(new OrderItemDtoValidator());
     }
 }
-
+ 
 public class OrderItemDtoValidator : AbstractValidator<OrderItemDto>
 {
     public OrderItemDtoValidator()

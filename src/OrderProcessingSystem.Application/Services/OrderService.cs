@@ -67,4 +67,15 @@ public class OrderService : IOrderService
         await _orderRepository.UpdateAsync(order);
         _logger.LogInformation("Order {OrderId} was successfully cancelled.", id);
     }
+
+    public async Task AddPayment(Guid orderId, decimal amount)
+    {
+        var order = await _orderRepository.GetByIdAsync((orderId));
+        if(order == null) 
+        {
+            throw new NotFoundException(nameof(Order), orderId);
+        }
+        order.AddPayment(amount);
+        await _orderRepository.UpdateAsync(order);
+    }
 }

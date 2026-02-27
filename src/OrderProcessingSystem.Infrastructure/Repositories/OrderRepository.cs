@@ -25,6 +25,7 @@ public class OrderRepository : IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.Items)
+            .Include(o => o.Payments)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
 
@@ -44,7 +45,26 @@ public class OrderRepository : IOrderRepository
 
     public async Task UpdateAsync(Order order)
     {
-        _context.Orders.Update(order);
+        if (_context.Entry(order).State == EntityState.Detached)
+        {
+            _context.Orders.Attach(order);
+        }
+
+        _context.ChangeTracker.DetectChanges();
+
+        foreach (var paymentEntry in _context.ChangeTracker.Entries<Payment>()
+                     .Where(entry => entry.State == EntityState.Modified))
+        {
+            var paymentExists = await _context.Payments
+                .AsNoTracking()
+                .AnyAsync(p => p.PaymentId == paymentEntry.Entity.PaymentId);
+
+            if (!paymentExists)
+            {
+                paymentEntry.State = EntityState.Added;
+            }
+        }
+
         await _context.SaveChangesAsync();
     }
 

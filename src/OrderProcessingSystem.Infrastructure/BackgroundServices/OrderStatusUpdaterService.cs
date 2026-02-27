@@ -52,8 +52,21 @@ public class OrderStatusUpdaterService : BackgroundService
 
                 foreach (var order in pendingOrders)
                 {
-                    order.UpdateStatus(OrderStatus.Processing);
-                    await orderRepository.UpdateAsync(order);
+                    try
+                    {
+                        if (!order.IsFullyPaid())
+                        {
+                            _logger.LogInformation("Skipping order {OrderId} because it is not fully paid.", order.Id);
+                            continue;
+                        }
+
+                        order.MarkAsProcessing();
+                        await orderRepository.UpdateAsync(order);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to update order {OrderId} to Processing.", order.Id);
+                    }
                 }
             }
         }

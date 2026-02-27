@@ -9,4 +9,5 @@ public interface IOrderService
     Task<OrderDto> GetOrderByIdAsync(Guid id);
     Task<IEnumerable<OrderDto>> GetAllOrdersAsync(OrderStatus? statusFilter);
     Task CancelOrderAsync(Guid id);
+    Task AddPayment(Guid orderId , decimal amount);
 }
